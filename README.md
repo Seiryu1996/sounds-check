@@ -2,7 +2,7 @@
 
 - Harmony Check
 - Pitch Check
-- Load an audio file and check the harmony
+- Load an audio file and check the harmony  
   →　「音楽ファイルを選択」→　「再生」　→　「一時停止」　→　「音声固定」
 
 ## Composition
