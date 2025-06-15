@@ -646,7 +646,7 @@
             }, 5000);
         }
 
-        // マイク入力の開始/停止
+        // ハーモニー確認の開始/停止
         micBtn.addEventListener('click', async () => {
             if (!isMicActive) {
                 try {
@@ -660,7 +660,7 @@
                     
                     // ブラウザの対応チェック
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        showError('お使いのブラウザはマイク入力に対応していません。\nChrome、Firefox、Edge等の最新ブラウザをご利用ください。');
+                        showError('お使いのブラウザはハーモニー確認に対応していません。\nChrome、Firefox、Edge等の最新ブラウザをご利用ください。');
                         return;
                     }
                     
@@ -681,7 +681,7 @@
                     micBtn.textContent = '🎤 マイク停止';
                     micBtn.style.background = 'linear-gradient(45deg, #f44336, #e91e63)';
                     micIndicator.classList.add('active');
-                    info.textContent = 'マイク入力中...';
+                    info.textContent = 'ハーモニー確認中...';
                     
                     // 既存の音楽を停止
                     if (isPlaying && source) {
@@ -724,7 +724,7 @@
             }
         });
 
-        // マイク入力の停止
+        // ハーモニー確認の停止
         function stopMicInput() {
             if (micStream) {
                 micStream.getTracks().forEach(track => track.stop());
@@ -735,10 +735,10 @@
                 micSource = null;
             }
             isMicActive = false;
-            micBtn.textContent = '🎤 マイク入力';
+            micBtn.textContent = '🎤 ハーモニー確認';
             micBtn.style.background = 'linear-gradient(45deg, #00d4ff, #0099cc)';
             micIndicator.classList.remove('active');
-            info.textContent = 'マイク入力を停止しました';
+            info.textContent = 'ハーモニー確認を停止しました';
             if (!isPlaying) {
                 harmonyOverlay.classList.remove('active');
                 cancelAnimationFrame(animationId);
@@ -771,7 +771,7 @@
                     initAudioContext();
                     // ブラウザの対応チェック
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        showError('お使いのブラウザはマイク入力に対応していません。\nChrome、Firefox、Edge等の最新ブラウザをご利用ください。');
+                        showError('お使いのブラウザはハーモニー確認に対応していません。\nChrome、Firefox、Edge等の最新ブラウザをご利用ください。');
                         return;
                     }
                     if (!micStream) {
@@ -893,7 +893,7 @@
                 cancelAnimationFrame(tunerAnimationId);
                 tunerAnimationId = null;
             }
-            // マイク入力も停止（マイクモードでない場合）
+            // ハーモニー確認も停止（マイクモードでない場合）
             if (!isMicActive) {
                 if (micStream) {
                     micStream.getTracks().forEach(track => track.stop());
