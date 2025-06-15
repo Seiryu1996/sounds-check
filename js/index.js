@@ -23,7 +23,6 @@
         let tunerMode = false;
         let tunerAnimationId = null;
         let tunerA4Frequency = 440; // デフォルトA4周波数
-        
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const fileInput = document.getElementById('fileInput');
@@ -51,7 +50,6 @@
         const tunerCents = document.getElementById('tunerCents');
         const tunerIndicator = document.getElementById('tunerIndicator');
         const tunerA4Select = document.getElementById('tunerA4');
-        
         // コード進行の定義
         const chordPatterns = {
             // メジャーコード
@@ -80,7 +78,6 @@
             minorMajor7: { intervals: [0, 3, 7, 11], symbol: 'mM7', name: 'マイナーメジャーセブンス' },
             halfDim7: { intervals: [0, 3, 6, 10], symbol: 'm7♭5', name: 'ハーフディミニッシュ' }
         };
-        
         // 音階と周波数の対応表
         const noteFrequencies = {
             'C': [16.35, 32.70, 65.41, 130.81, 261.63, 523.25, 1046.50, 2093.00, 4186.01],
@@ -96,22 +93,18 @@
             'A#': [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31, 7458.62],
             'B': [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07, 7902.13]
         };
-        
         // キャンバスのリサイズ
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight - document.querySelector('.controls').offsetHeight;
-            
             // 周波数キャンバスのサイズ設定
             if (frequencyCanvas.parentElement) {
                 frequencyCanvas.width = frequencyCanvas.parentElement.offsetWidth - 20;
                 frequencyCanvas.height = window.innerWidth <= 375 ? 100 : 130;
             }
         }
-        
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-        
         // AudioContextの初期化
         function initAudioContext() {
             if (!audioContext) {
@@ -122,19 +115,15 @@
                 dataArray = new Uint8Array(bufferLength);
             }
         }
-        
         // 周波数から音階を検出（基準周波数対応版）
         function frequencyToNote(frequency, referenceA4 = tunerA4Frequency) {
             const A4 = referenceA4 || 440;
             const C0 = A4 * Math.pow(2, -4.75);
             const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            
             if (frequency === 0) return null;
-            
             const halfSteps = 12 * Math.log2(frequency / C0);
             const octave = Math.floor(halfSteps / 12);
             const noteIndex = Math.round(halfSteps % 12);
-            
             return {
                 note: noteNames[noteIndex],
                 octave: octave,
@@ -142,17 +131,14 @@
                 cents: (halfSteps % 12 - noteIndex) * 100
             };
         }
-        
         // 周波数スペクトルから主要な周波数を検出
         function detectPeakFrequencies(dataArray, sampleRate) {
             const frequencies = [];
             const minFreq = 80; // 最小周波数 (Hz)
             const maxFreq = 2000; // 最大周波数 (Hz)
             const threshold = 50; // 閾値
-            
             for (let i = 0; i < dataArray.length; i++) {
                 const frequency = i * sampleRate / (dataArray.length * 2);
-                
                 if (frequency >= minFreq && frequency <= maxFreq && dataArray[i] > threshold) {
                     // ピーク検出
                     if (i > 0 && i < dataArray.length - 1 &&
@@ -165,14 +151,12 @@
                     }
                 }
             }
-            
             // 振幅でソートして上位を返す
             return frequencies
                 .sort((a, b) => b.amplitude - a.amplitude)
                 .slice(0, 8)
                 .map(f => f.frequency);
         }
-        
         // 音階名を半音階のインデックスに変換
         function noteToSemitone(noteName) {
             if (!noteName) return null;
@@ -182,23 +166,18 @@
             };
             return noteMap[noteName];
         }
-        
         // コードを判定
         function identifyChord(notes) {
             if (!notes || notes.length < 2) return null;
-            
             // 音階名を抽出してソート
             const noteNames = notes.map(n => n.note).filter(n => n !== null);
             const semitones = noteNames.map(noteToSemitone).filter(s => s !== null).sort((a, b) => a - b);
-            
             if (semitones.length < 2) return null;
-            
             // 音階名のマップを作成
             const semitoneToNote = {
                 0: 'C', 1: 'C#', 2: 'D', 3: 'D#', 4: 'E', 5: 'F',
                 6: 'F#', 7: 'G', 8: 'G#', 9: 'A', 10: 'A#', 11: 'B'
             };
-            
             // 各音をルートとして試す
             for (let rootIndex = 0; rootIndex < semitones.length; rootIndex++) {
                 const root = semitones[rootIndex];
@@ -206,7 +185,6 @@
                     const interval = (note - root + 12) % 12;
                     return interval;
                 }).filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
-                
                 // パターンマッチング
                 for (const [chordType, pattern] of Object.entries(chordPatterns)) {
                     if (intervals.length === pattern.intervals.length) {
@@ -230,14 +208,12 @@
                     }
                 }
             }
-            
             // 部分一致を試す（3和音以上の場合）
             if (semitones.length >= 3) {
                 for (let rootIndex = 0; rootIndex < semitones.length; rootIndex++) {
                     const root = semitones[rootIndex];
                     const intervals = semitones.map(note => (note - root + 12) % 12)
                         .filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
-                    
                     // 基本的なコードパターンをチェック
                     for (const [chordType, pattern] of Object.entries(chordPatterns)) {
                         if (pattern.intervals.length <= intervals.length) {
@@ -262,22 +238,17 @@
                     }
                 }
             }
-            
             return null;
         }
-        
         // 和音の検出と表示
         function analyzeHarmony() {
             if (!analyser) return;
-            
             analyser.getByteFrequencyData(dataArray);
             const sampleRate = audioContext.sampleRate;
             const peakFrequencies = detectPeakFrequencies(dataArray, sampleRate);
-            
             const notes = peakFrequencies
                 .map(freq => frequencyToNote(freq))
                 .filter(note => note !== null);
-            
             // 重複を除去
             const uniqueNotes = notes.reduce((acc, note) => {
                 const key = note.note;
@@ -286,12 +257,10 @@
                 }
                 return acc;
             }, []);
-            
             // 音階を表示
             noteDisplay.innerHTML = uniqueNotes
                 .map(note => `<div class="note">${note.note}${note.octave}</div>`)
                 .join('');
-            
             // コードを判定
             const chord = identifyChord(uniqueNotes);
             if (chord && chord.root) {
@@ -303,63 +272,48 @@
                 chordName.textContent = '-';
                 chordType.textContent = '判定できません';
             }
-            
             // 周波数スペクトラムを描画
             drawFrequencySpectrum();
-            
             return { notes: uniqueNotes, chord: chord, rawData: dataArray.slice() };
         }
-        
         // 周波数スペクトラムの描画
         function drawFrequencySpectrum() {
             freqCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
             freqCtx.fillRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
-            
             const barWidth = frequencyCanvas.width / bufferLength * 10;
             let x = 0;
-            
             for (let i = 0; i < bufferLength / 10; i++) {
                 const barHeight = (dataArray[i] / 255) * frequencyCanvas.height * 0.8;
-                
                 const gradient = freqCtx.createLinearGradient(0, frequencyCanvas.height - barHeight, 0, frequencyCanvas.height);
                 gradient.addColorStop(0, 'rgba(102, 126, 234, 0.8)');
                 gradient.addColorStop(1, 'rgba(118, 75, 162, 0.3)');
-                
                 freqCtx.fillStyle = gradient;
                 freqCtx.fillRect(x, frequencyCanvas.height - barHeight, barWidth - 1, barHeight);
-                
                 x += barWidth;
             }
         }
-        
         // ループ用のバッファを作成
         function createLoopBuffer(duration = 0.1) {
             if (!audioBuffer || !audioContext) return null;
-            
             const sampleRate = audioContext.sampleRate;
             const loopDuration = Math.min(duration, audioBuffer.duration - pauseTime);
             const startSample = Math.floor(pauseTime * sampleRate);
             const endSample = Math.floor((pauseTime + loopDuration) * sampleRate);
             const length = endSample - startSample;
-            
             const newBuffer = audioContext.createBuffer(
                 audioBuffer.numberOfChannels,
                 length,
                 sampleRate
             );
-            
             for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
                 const sourceData = audioBuffer.getChannelData(channel);
                 const targetData = newBuffer.getChannelData(channel);
-                
                 for (let i = 0; i < length; i++) {
                     targetData[i] = sourceData[startSample + i];
                 }
             }
-            
             return newBuffer;
         }
-        
         // ファイル選択イベント
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -451,27 +405,22 @@
                 }
             }
         });
-        
         // モバイルでのファイル選択を改善
         fileInput.addEventListener('click', (e) => {
             // iOSでのファイル選択ダイアログの問題を回避
             e.target.value = null;
         });
-        
         // 再生ボタン
         playBtn.addEventListener('click', async () => {
             if (!audioBuffer) return;
-            
             try {
                 // モバイルでのAudioContext初期化
                 if (!audioContext) {
                     initAudioContext();
                 }
-                
                 if (audioContext.state === 'suspended') {
                     await audioContext.resume();
                 }
-                
                 // フリーズ状態を解除
                 if (isFrozen) {
                     isFrozen = false;
@@ -482,21 +431,17 @@
                         loopSource.disconnect();
                     }
                 }
-                
                 source = audioContext.createBufferSource();
                 source.buffer = audioBuffer;
                 source.connect(analyser);
                 analyser.connect(audioContext.destination);
-                
                 const offset = pauseTime;
                 source.start(0, offset);
                 startTime = audioContext.currentTime - offset;
-                
                 isPlaying = true;
                 playBtn.disabled = true;
                 pauseBtn.disabled = false;
                 freezeBtn.disabled = false;
-                
                 source.onended = () => {
                     if (isPlaying) {
                         isPlaying = false;
@@ -507,15 +452,12 @@
                         cancelAnimationFrame(animationId);
                     }
                 };
-                
                 visualize();
-                
             } catch (error) {
                 showError('再生エラー: ' + error.message);
                 console.error('Playback error:', error);
             }
         });
-        
         // 一時停止ボタン
         pauseBtn.addEventListener('click', () => {
             if (!isPlaying || !source) return;
@@ -535,7 +477,6 @@
             
             cancelAnimationFrame(animationId);
         });
-        
         // 音声固定ボタン
         freezeBtn.addEventListener('click', () => {
             if (!frozenData || isPlaying) return;
@@ -557,7 +498,6 @@
                 }
             }
         });
-        
         // ループ再生
         function playLoop() {
             if (!loopBuffer || !isFrozen) return;
@@ -568,13 +508,11 @@
             loopSource.connect(audioContext.destination);
             loopSource.start();
         }
-        
         // 感度スライダー
         sensitivitySlider.addEventListener('input', (e) => {
             sensitivity = parseFloat(e.target.value);
             sensitivityValue.textContent = sensitivity.toFixed(1);
         });
-        
         // ビジュアライゼーションモード切り替え
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -583,7 +521,6 @@
                 visualizationMode = e.target.dataset.mode;
             });
         });
-        
         // ビジュアライゼーション
         function visualize() {
             animationId = requestAnimationFrame(visualize);
@@ -615,7 +552,6 @@
                 analyzeHarmony();
             }
         }
-        
         // バー表示
         function drawBars() {
             const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -634,7 +570,6 @@
                 x += barWidth + 1;
             }
         }
-        
         // サークル表示
         function drawCircle() {
             const centerX = canvas.width / 2;
@@ -669,7 +604,6 @@
             ctx.lineWidth = 2;
             ctx.stroke();
         }
-        
         // ウェーブ表示
         function drawWave() {
             const tempArray = new Uint8Array(bufferLength);
@@ -703,7 +637,6 @@
             ctx.stroke();
             ctx.shadowBlur = 0;
         }
-        
         // エラー表示
         function showError(message) {
             errorDiv.textContent = message;
@@ -797,18 +730,15 @@
                 micStream.getTracks().forEach(track => track.stop());
                 micStream = null;
             }
-            
             if (micSource) {
                 micSource.disconnect();
                 micSource = null;
             }
-            
             isMicActive = false;
             micBtn.textContent = '🎤 マイク入力';
             micBtn.style.background = 'linear-gradient(45deg, #00d4ff, #0099cc)';
             micIndicator.classList.remove('active');
             info.textContent = 'マイク入力を停止しました';
-            
             if (!isPlaying) {
                 harmonyOverlay.classList.remove('active');
                 cancelAnimationFrame(animationId);
@@ -819,14 +749,12 @@
         // リアルタイム和音分析
         function startRealtimeHarmonyAnalysis() {
             if (!isMicActive) return;
-            
             // 定期的に和音を分析
             const analyzeInterval = setInterval(() => {
                 if (!isMicActive) {
                     clearInterval(analyzeInterval);
                     return;
                 }
-                
                 analyzeHarmony();
             }, 100); // 100msごとに分析
         }
@@ -840,17 +768,14 @@
                         showError('チューナー機能を使用するには、HTTPS接続が必要です。\nローカルでテストする場合は、サーバーを起動してlocalhost経由でアクセスしてください。');
                         return;
                     }
-                    
                     initAudioContext();
-                    
                     // ブラウザの対応チェック
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                         showError('お使いのブラウザはマイク入力に対応していません。\nChrome、Firefox、Edge等の最新ブラウザをご利用ください。');
                         return;
                     }
-                    
                     if (!micStream) {
-                        micStream = await navigator.mediaDevices.getUserMedia({ 
+                        micStream = await navigator.mediaDevices.getUserMedia({
                             audio: {
                                 echoCancellation: false,  // チューナーでは無効化
                                 noiseSuppression: false,  // より正確な周波数検出のため
@@ -858,19 +783,15 @@
                             }
                         });
                     }
-                    
                     if (!micSource) {
                         micSource = audioContext.createMediaStreamSource(micStream);
                         micSource.connect(analyser);
                     }
-                    
                     tunerMode = true;
                     tunerOverlay.classList.add('active');
                     startTuner();
-                    
                 } catch (error) {
                     console.error('Mic access error:', error);
-                    
                     if (error.name === 'NotAllowedError') {
                         showError('マイクへのアクセスが拒否されました。\nブラウザの設定でマイクの使用を許可してください。');
                     } else if (error.name === 'NotFoundError') {
@@ -895,30 +816,23 @@
                 tunerA4Frequency = parseFloat(e.target.value);
             });
         }
-        
         // チューナーの開始
         function startTuner() {
             if (!tunerMode) return;
-            
             analyser.getByteFrequencyData(dataArray);
-            
             // ピッチ検出（自己相関法）
             const pitch = detectPitch();
-            
             if (pitch > 0) {
                 const noteInfo = frequencyToNote(pitch, tunerA4Frequency);
                 if (noteInfo) {
                     tunerNote.textContent = noteInfo.note + noteInfo.octave;
                     tunerFrequency.textContent = pitch.toFixed(1) + ' Hz';
-                    
                     // セント値の計算と表示
                     const cents = noteInfo.cents;
                     tunerCents.textContent = (cents > 0 ? '+' : '') + cents.toFixed(0) + ' cents';
-                    
                     // インジケーターの位置を更新
                     const position = 50 + (cents / 50) * 45; // ±50セントを画面幅にマップ
                     tunerIndicator.style.left = Math.max(5, Math.min(95, position)) + '%';
-                    
                     // 色の変更（チューニングが合っているかどうか）
                     if (Math.abs(cents) < 5) {
                         tunerIndicator.style.background = '#4caf50';
@@ -933,7 +847,6 @@
                     }
                 }
             }
-            
             tunerAnimationId = requestAnimationFrame(startTuner);
         }
 
@@ -943,7 +856,6 @@
             const bufferSize = analyser.fftSize;
             const buffer = new Float32Array(bufferSize);
             analyser.getFloatTimeDomainData(buffer);
-            
             // 自己相関
             const r = new Array(bufferSize).fill(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -951,30 +863,25 @@
                     r[i] += buffer[j] * buffer[j + i];
                 }
             }
-            
             // ピーク検出
             let maxValue = 0;
             let bestOffset = -1;
             const minOffset = Math.floor(sampleRate / 800); // 800Hz
             const maxOffset = Math.floor(sampleRate / 80);  // 80Hz
-            
             for (let offset = minOffset; offset < maxOffset; offset++) {
                 if (r[offset] > maxValue) {
                     maxValue = r[offset];
                     bestOffset = offset;
                 }
             }
-            
             if (bestOffset === -1 || r[0] < 0.01) {
                 return -1;
             }
-            
             // 補間でより正確な周波数を計算
             const y1 = r[bestOffset - 1] || 0;
             const y2 = r[bestOffset];
             const y3 = r[bestOffset + 1] || 0;
             const x = (y3 - y1) / (2 * (2 * y2 - y1 - y3));
-            
             return sampleRate / (bestOffset + x);
         }
 
@@ -982,19 +889,16 @@
         function closeTuner() {
             tunerMode = false;
             tunerOverlay.classList.remove('active');
-            
             if (tunerAnimationId) {
                 cancelAnimationFrame(tunerAnimationId);
                 tunerAnimationId = null;
             }
-            
             // マイク入力も停止（マイクモードでない場合）
             if (!isMicActive) {
                 if (micStream) {
                     micStream.getTracks().forEach(track => track.stop());
                     micStream = null;
                 }
-                
                 if (micSource) {
                     micSource.disconnect();
                     micSource = null;

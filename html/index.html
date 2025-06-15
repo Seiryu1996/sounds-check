@@ -36,9 +36,9 @@
                     <option value="432">432 Hz</option>
                     <option value="435">435 Hz</option>
                     <option value="438">438 Hz</option>
-                    <option value="440" selected>440 Hz (標準)</option>
+                    <option value="440">440 Hz</option>
                     <option value="441">441 Hz</option>
-                    <option value="442">442 Hz</option>
+                    <option value="442" selected>442 Hz (標準)</option>
                     <option value="443">443 Hz</option>
                     <option value="444">444 Hz</option>
                     <option value="445">445 Hz</option>
@@ -47,48 +47,39 @@
             <div class="tuner-close" onclick="closeTuner()">閉じる</div>
         </div>
     </div>
-    
     <div class="controls">
         <label for="fileInput" class="file-label">
             音楽ファイルを選択
         </label>
         <input type="file" id="fileInput" accept="audio/*,video/*">
-        
         <button id="playBtn" disabled>再生</button>
         <button id="pauseBtn" disabled>一時停止</button>
         <button id="freezeBtn" class="freeze-btn" disabled>音声固定</button>
-        
         <div class="slider-container">
             <span>感度:</span>
             <input type="range" id="sensitivity" min="0.5" max="3" step="0.1" value="1">
             <span id="sensitivityValue">1.0</span>
         </div>
-        
         <div class="visualization-modes">
             <button class="mode-btn active" data-mode="bars">バー</button>
             <button class="mode-btn" data-mode="circle">サークル</button>
             <button class="mode-btn" data-mode="wave">ウェーブ</button>
         </div>
-        
         <button id="micBtn" class="button" style="background: linear-gradient(45deg, #00d4ff, #0099cc);">
             🎤 マイク入力
         </button>
-        
         <button id="tunerBtn" class="button" style="background: linear-gradient(45deg, #4caf50, #8bc34a);">
             🎸 チューナー
         </button>
-        
         <div class="info" id="info">
             ファイルを選択してください
             <span class="mic-indicator" id="micIndicator"></span>
         </div>
     </div>
-    
     <div id="loading">
         <div class="spinner"></div>
         <div>読み込み中...</div>
     </div>
-    
     <div class="error" id="error"></div>
     <script src="../js/index.js"></script>
 </body>
