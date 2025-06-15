@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Real-Time Music Wave Visualization with Harmony Analysis</title>
     <style>
         * {
@@ -298,6 +300,8 @@
         @media (max-width: 768px) {
             .controls {
                 justify-content: center;
+                padding: 15px 10px;
+                gap: 10px;
             }
             
             .slider-container {
@@ -314,6 +318,269 @@
                 right: 10px;
                 left: 10px;
                 min-width: auto;
+            }
+        }
+
+        /* iPhone SE (375px幅) に最適化 */
+        @media (max-width: 375px) {
+            body {
+                font-size: 14px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .controls {
+                padding: 10px 5px;
+                gap: 8px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                margin: 3px 0;
+            }
+
+            .file-label {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                text-align: center;
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .slider-container {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            input[type="range"] {
+                width: 120px;
+            }
+
+            .visualization-modes {
+                width: 100%;
+                justify-content: space-around;
+                padding: 3px;
+            }
+
+            .mode-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+                flex: 1;
+            }
+
+            .info {
+                padding: 8px 15px;
+                font-size: 12px;
+                width: 100%;
+                text-align: center;
+            }
+
+            /* ハーモニーオーバーレイの調整 */
+            .harmony-overlay {
+                top: 5px;
+                right: 5px;
+                left: 5px;
+                padding: 15px;
+                font-size: 12px;
+            }
+
+            .harmony-title {
+                font-size: 14px;
+                margin-bottom: 10px;
+            }
+
+            .chord-display {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .chord-name {
+                font-size: 20px;
+            }
+
+            .chord-type {
+                font-size: 12px;
+            }
+
+            .note-display {
+                gap: 5px;
+            }
+
+            .note {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+
+            .frequency-chart {
+                height: 100px;
+                padding: 5px;
+            }
+
+            /* チューナーオーバーレイの調整 */
+            .tuner-overlay {
+                width: calc(100% - 20px);
+                padding: 20px;
+                min-width: unset;
+            }
+
+            .tuner-note {
+                font-size: 48px;
+                margin-bottom: 15px;
+            }
+
+            .tuner-frequency {
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+
+            .tuner-cents {
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+
+            .tuner-meter {
+                height: 30px;
+                margin-bottom: 15px;
+            }
+
+            .tuner-close {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            /* エラーメッセージの調整 */
+            .error {
+                font-size: 12px;
+                padding: 10px 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            /* ローディングの調整 */
+            #loading {
+                font-size: 18px;
+            }
+
+            .spinner {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* 横向き対応 */
+        @media (max-width: 667px) and (orientation: landscape) {
+            .controls {
+                padding: 8px 10px;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            button {
+                width: auto;
+                flex: 1;
+                min-width: 100px;
+                margin: 2px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            .file-label {
+                width: auto;
+                flex: 1;
+                min-width: 100px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+
+            .slider-container {
+                width: auto;
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .visualization-modes {
+                width: auto;
+                flex: 1;
+            }
+
+            .info {
+                width: 100%;
+                font-size: 11px;
+                padding: 5px 10px;
+            }
+
+            .harmony-overlay {
+                max-width: 300px;
+                right: 5px;
+                left: auto;
+            }
+        }
+
+        /* タッチデバイス用の調整 */
+        @media (hover: none) and (pointer: coarse) {
+            button:hover {
+                transform: none;
+            }
+
+            .file-label:hover {
+                transform: none;
+            }
+
+            .stat-card:hover {
+                transform: none;
+            }
+
+            .video-card:hover {
+                transform: none;
+            }
+
+            input[type="range"] {
+                height: 10px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        /* 小さい画面での追加調整 */
+        @media (max-width: 320px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 8px 15px;
+            }
+
+            .file-label {
+                font-size: 12px;
+                padding: 8px 15px;
+            }
+
+            .chord-name {
+                font-size: 18px;
+            }
+
+            .tuner-note {
+                font-size: 36px;
             }
         }
 
@@ -584,15 +851,17 @@
             'A#': [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31, 7458.62],
             'B': [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07, 7902.13]
         };
-        
+
         // キャンバスのリサイズ
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight - document.querySelector('.controls').offsetHeight;
             
             // 周波数キャンバスのサイズ設定
-            frequencyCanvas.width = frequencyCanvas.parentElement.offsetWidth - 20;
-            frequencyCanvas.height = 130;
+            if (frequencyCanvas.parentElement) {
+                frequencyCanvas.width = frequencyCanvas.parentElement.offsetWidth - 20;
+                frequencyCanvas.height = window.innerWidth <= 375 ? 100 : 130;
+            }
         }
         
         window.addEventListener('resize', resizeCanvas);
